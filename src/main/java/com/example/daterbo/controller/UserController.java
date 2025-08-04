@@ -1,10 +1,15 @@
 package com.example.daterbo.controller;
 
 import com.example.daterbo.model.User;
+import com.example.daterbo.service.JwtUtil;
 import com.example.daterbo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,20 +21,38 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private AuthenticationManager authenticationManager;
 
-    // Endpoint untuk login
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * Endpoint untuk login pengguna.
+     * Mengautentikasi pengguna dan mengembalikan JWT jika berhasil.
+     */
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
-        Optional<User> userOptional = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (userOptional.isPresent()) {
-            return ResponseEntity.ok(userOptional.get());
-        } else {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody User authenticationRequest) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
+            );
+        } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Email atau password salah."));
         }
+
+        final UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getEmail());
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(Map.of("token", jwt));
     }
 
-    // Endpoint untuk membuat pengguna baru (registrasi)
+    /**
+     * Endpoint untuk membuat pengguna baru (registrasi).
+     * Password akan di-hash oleh UserService.
+     */
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         try {
