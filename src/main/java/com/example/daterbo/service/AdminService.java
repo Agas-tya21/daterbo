@@ -1,9 +1,12 @@
+// agas-tya21/daterbo/daterbo-5d63aa6fe5be4c5f0f3509284e781c11677bf0a1/src/main/java/com/example/daterbo/service/AdminService.java
 package com.example.daterbo.service;
 
 import com.example.daterbo.model.Admin;
 import com.example.daterbo.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -12,46 +15,34 @@ public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
-    /**
-     * Memvalidasi login admin berdasarkan email dan password.
-     * @param email Email admin.
-     * @param password Password admin.
-     * @return Optional berisi objek Admin jika login berhasil.
-     */
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public List<Admin> getAllAdmins() {
+        return adminRepository.findAll();
+    }
+    
     public Optional<Admin> login(String email, String password) {
-        // PERHATIAN: Di aplikasi nyata, gunakan hashing (misalnya, BCrypt) untuk memverifikasi password.
         return adminRepository.findById(email)
-                .filter(admin -> admin.getPassword().equals(password));
+                .filter(admin -> passwordEncoder.matches(password, admin.getPassword()));
     }
 
-    /**
-     * Membuat admin baru.
-     * @param admin Objek admin yang akan dibuat.
-     * @return Admin yang telah disimpan.
-     */
     public Admin createAdmin(Admin admin) {
-        // PERHATIAN: Enkripsi password sebelum menyimpannya ke database.
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return adminRepository.save(admin);
     }
 
-    /**
-     * Memperbarui password admin.
-     * @param email Email admin yang akan diupdate.
-     * @param adminDetails Objek yang berisi password baru.
-     * @return Optional berisi admin yang telah diupdate.
-     */
     public Optional<Admin> updateAdmin(String email, Admin adminDetails) {
         return adminRepository.findById(email)
                 .map(admin -> {
-                    admin.setPassword(adminDetails.getPassword()); // Enkripsi password baru di sini
+                    admin.setNamaadmin(adminDetails.getNamaadmin());
+                    if (adminDetails.getPassword() != null && !adminDetails.getPassword().isEmpty()) {
+                        admin.setPassword(passwordEncoder.encode(adminDetails.getPassword()));
+                    }
                     return adminRepository.save(admin);
                 });
     }
 
-    /**
-     * Menghapus admin berdasarkan email.
-     * @param email Email admin yang akan dihapus.
-     */
     public void deleteAdmin(String email) {
         adminRepository.deleteById(email);
     }

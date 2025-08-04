@@ -8,6 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.Data;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -15,6 +16,8 @@ import lombok.Data;
 public class DataPeminjam {
 
     @Id
+    private String iddatapeminjam;
+
     private String nik;
 
     @ManyToOne
@@ -51,4 +54,8 @@ public class DataPeminjam {
     private String fotorekeninglistrik;
     private String fotobukunikah;
     private String fotosertifikat;
+
+    public DataPeminjam() {
+        this.iddatapeminjam = UUID.randomUUID().toString();
+    }
 }

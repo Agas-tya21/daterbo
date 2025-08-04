@@ -1,9 +1,9 @@
 package com.example.daterbo.config;
 
 import com.example.daterbo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,19 +20,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Defines the main security rules for HTTP requests.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .cors(cors -> {}) // Uses WebConfig for CORS settings
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                 .requestMatchers(
                     "/api/users/register", 
                     "/api/users/login", 
                     "/api/admin/login",
+                    "/api/admin/register", // <-- TAMBAHKAN INI
                     "/swagger-ui.html", 
                     "/swagger-ui/**", 
-                    "/api-docs/**"
+                    "/api-docs/**",
+                    "/uploads/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
@@ -42,7 +44,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Provides the user details service and password encoder to Spring Security.
     @Bean
     public AuthenticationProvider authenticationProvider(UserService userService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -51,13 +52,11 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // Exposes the AuthenticationManager as a Bean for use in the UserController.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // Defines the password encoder bean.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

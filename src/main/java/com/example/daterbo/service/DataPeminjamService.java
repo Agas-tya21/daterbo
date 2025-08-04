@@ -20,8 +20,8 @@ public class DataPeminjamService {
         return dataPeminjamRepository.findAll();
     }
 
-    public Optional<DataPeminjam> getDataPeminjamByNik(String nik) {
-        return dataPeminjamRepository.findById(nik);
+    public Optional<DataPeminjam> getDataPeminjamById(String id) {
+        return dataPeminjamRepository.findById(id);
     }
 
     public DataPeminjam createDataPeminjam(DataPeminjam dataPeminjam) {
@@ -30,17 +30,18 @@ public class DataPeminjamService {
         }
         if (dataPeminjam.getStatus() == null) {
             Status defaultStatus = new Status();
-            defaultStatus.setIdstatus("S001");
+            defaultStatus.setIdstatus("S001"); // Status default: BARU
             dataPeminjam.setStatus(defaultStatus);
         }
         return dataPeminjamRepository.save(dataPeminjam);
     }
 
-    public DataPeminjam updateDataPeminjam(String nik, DataPeminjam dataPeminjamDetails) {
-        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(nik)
-                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with nik: " + nik));
+    public DataPeminjam updateDataPeminjam(String id, DataPeminjam dataPeminjamDetails) {
+        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with id: " + id));
 
         // Update fields dari data JSON
+        dataPeminjam.setNik(dataPeminjamDetails.getNik());
         dataPeminjam.setUser(dataPeminjamDetails.getUser());
         dataPeminjam.setStatus(dataPeminjamDetails.getStatus());
         dataPeminjam.setLeasing(dataPeminjamDetails.getLeasing());
@@ -69,10 +70,50 @@ public class DataPeminjamService {
         return dataPeminjamRepository.save(dataPeminjam);
     }
 
-    public void deleteDataPeminjam(String nik) {
-        if (!dataPeminjamRepository.existsById(nik)) {
-            throw new RuntimeException("Data Peminjam not found with nik: " + nik);
+    public void deleteDataPeminjam(String id) {
+        if (!dataPeminjamRepository.existsById(id)) {
+            throw new RuntimeException("Data Peminjam not found with id: " + id);
         }
-        dataPeminjamRepository.deleteById(nik);
+        dataPeminjamRepository.deleteById(id);
+    }
+
+    public DataPeminjam prosesPencairan(String id) {
+        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with id: " + id));
+
+        Status prosesStatus = new Status();
+        prosesStatus.setIdstatus("S002"); 
+        dataPeminjam.setStatus(prosesStatus);
+        dataPeminjam.setTglpenerimaan(LocalDate.now());
+
+        return dataPeminjamRepository.save(dataPeminjam);
+    }
+
+    public DataPeminjam batalPeminjaman(String id) {
+        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with id: " + id));
+
+        Status batalStatus = new Status();
+        batalStatus.setIdstatus("S004"); 
+        dataPeminjam.setStatus(batalStatus);
+
+        return dataPeminjamRepository.save(dataPeminjam);
+    }
+
+    /**
+     * Mengubah status peminjaman menjadi 'CAIR' (S003).
+     * @param id ID data peminjam.
+     * @return Data peminjam yang telah diperbarui.
+     */
+    public DataPeminjam cairkanPeminjaman(String id) {
+        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with id: " + id));
+
+        // Set status ke "CAIR" (S003)
+        Status cairStatus = new Status();
+        cairStatus.setIdstatus("S003"); 
+        dataPeminjam.setStatus(cairStatus);
+
+        return dataPeminjamRepository.save(dataPeminjam);
     }
 }

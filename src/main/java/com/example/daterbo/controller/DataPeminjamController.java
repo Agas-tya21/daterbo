@@ -30,7 +30,6 @@ public class DataPeminjamController {
 
     public DataPeminjamController() {
         this.objectMapper = new ObjectMapper();
-        // Register module untuk handle tipe data LocalDate
         this.objectMapper.registerModule(new JavaTimeModule());
     }
     
@@ -74,17 +73,17 @@ public class DataPeminjamController {
         return new ResponseEntity<>(listData, HttpStatus.OK);
     }
 
-    @GetMapping("/{nik}")
-    public ResponseEntity<DataPeminjam> getDataPeminjamByNik(@PathVariable String nik) {
-        Optional<DataPeminjam> dataPeminjam = dataPeminjamService.getDataPeminjamByNik(nik);
+    @GetMapping("/{id}")
+    public ResponseEntity<DataPeminjam> getDataPeminjamById(@PathVariable String id) {
+        Optional<DataPeminjam> dataPeminjam = dataPeminjamService.getDataPeminjamById(id);
         dataPeminjam.ifPresent(this::buildFileUrls);
         return dataPeminjam.map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping(value = "/{nik}", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<DataPeminjam> updateDataPeminjam(
-            @PathVariable String nik,
+            @PathVariable String id,
             @RequestPart("data") String dataPeminjamJson,
             @RequestPart(value = "fotoktp", required = false) MultipartFile fotoktp,
             @RequestPart(value = "fotobpkb", required = false) MultipartFile fotobpkb,
@@ -95,10 +94,6 @@ public class DataPeminjamController {
             @RequestPart(value = "fotobukunikah", required = false) MultipartFile fotobukunikah,
             @RequestPart(value = "fotosertifikat", required = false) MultipartFile fotosertifikat) {
         try {
-            if (!dataPeminjamService.getDataPeminjamByNik(nik).isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
-
             DataPeminjam dataPeminjamDetails = objectMapper.readValue(dataPeminjamJson, DataPeminjam.class);
 
             if (fotoktp != null && !fotoktp.isEmpty()) dataPeminjamDetails.setFotoktp(fileStorageService.storeFile(fotoktp));
@@ -110,7 +105,7 @@ public class DataPeminjamController {
             if (fotobukunikah != null && !fotobukunikah.isEmpty()) dataPeminjamDetails.setFotobukunikah(fileStorageService.storeFile(fotobukunikah));
             if (fotosertifikat != null && !fotosertifikat.isEmpty()) dataPeminjamDetails.setFotosertifikat(fileStorageService.storeFile(fotosertifikat));
 
-            DataPeminjam updatedData = dataPeminjamService.updateDataPeminjam(nik, dataPeminjamDetails);
+            DataPeminjam updatedData = dataPeminjamService.updateDataPeminjam(id, dataPeminjamDetails);
             buildFileUrls(updatedData);
             return ResponseEntity.ok(updatedData);
         } catch (IOException e) {
@@ -120,13 +115,46 @@ public class DataPeminjamController {
         }
     }
 
-    @DeleteMapping("/{nik}")
-    public ResponseEntity<HttpStatus> deleteDataPeminjam(@PathVariable String nik) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteDataPeminjam(@PathVariable String id) {
         try {
-            dataPeminjamService.deleteDataPeminjam(nik);
+            dataPeminjamService.deleteDataPeminjam(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{id}/proses")
+    public ResponseEntity<DataPeminjam> prosesPencairan(@PathVariable String id) {
+        try {
+            DataPeminjam updatedData = dataPeminjamService.prosesPencairan(id);
+            buildFileUrls(updatedData);
+            return ResponseEntity.ok(updatedData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}/batal")
+    public ResponseEntity<DataPeminjam> batalPeminjaman(@PathVariable String id) {
+        try {
+            DataPeminjam updatedData = dataPeminjamService.batalPeminjaman(id);
+            buildFileUrls(updatedData);
+            return ResponseEntity.ok(updatedData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}/cair")
+    public ResponseEntity<DataPeminjam> cairkanPeminjaman(@PathVariable String id) {
+        try {
+            DataPeminjam updatedData = dataPeminjamService.cairkanPeminjaman(id);
+            buildFileUrls(updatedData);
+            return ResponseEntity.ok(updatedData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
     
