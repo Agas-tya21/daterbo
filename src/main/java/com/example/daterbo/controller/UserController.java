@@ -29,10 +29,6 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * Endpoint untuk login pengguna.
-     * Mengautentikasi pengguna dan mengembalikan JWT jika berhasil.
-     */
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody User authenticationRequest) throws Exception {
         try {
@@ -48,11 +44,8 @@ public class UserController {
 
         return ResponseEntity.ok(Map.of("token", jwt));
     }
-
-    /**
-     * Endpoint untuk membuat pengguna baru (registrasi).
-     * Password akan di-hash oleh UserService.
-     */
+    
+    // ... (sisa controller tidak berubah)
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         try {
@@ -63,14 +56,12 @@ public class UserController {
         }
     }
 
-    // Endpoint untuk mendapatkan semua pengguna
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
     
-    // Endpoint untuk mendapatkan pengguna berdasarkan ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) {
         Optional<User> user = userService.getUserById(id);
@@ -78,7 +69,6 @@ public class UserController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Endpoint untuk mengubah data pengguna
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
         Optional<User> updatedUser = userService.updateUser(id, userDetails);
@@ -86,7 +76,6 @@ public class UserController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Endpoint untuk menghapus pengguna
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable String id) {
         try {

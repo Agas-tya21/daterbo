@@ -28,9 +28,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                 .requestMatchers(
                     "/api/users/register", 
-                    "/api/users/login", 
-                    "/api/admin/login",
-                    "/api/admin/register", // <-- TAMBAHKAN INI
+                    "/api/users/login",
                     "/swagger-ui.html", 
                     "/swagger-ui/**", 
                     "/api-docs/**",

@@ -1,6 +1,8 @@
 package com.example.daterbo.service;
 
+import com.example.daterbo.model.Role;
 import com.example.daterbo.model.User;
+import com.example.daterbo.repository.RoleRepository;
 import com.example.daterbo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,71 +23,63 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Logika untuk mencari user berdasarkan email. Spring Security akan menggunakan ini.
-        User user = userRepository.findAll().stream()
-                .filter(u -> u.getEmail().equals(email))
-                .findFirst()
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         
-        // Menggunakan User dari Spring Security
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
     }
 
-    /**
-     * Membuat pengguna baru (registrasi).
-     * Password akan dienkripsi secara otomatis.
-     * @param user Objek pengguna yang akan dibuat.
-     * @return Pengguna yang telah disimpan.
-     */
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User registerUser(User user) {
-        // Menghasilkan ID unik untuk pengguna baru
         user.setIduser(UUID.randomUUID().toString());
-        // Enkripsi password sebelum menyimpannya ke database
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        if (user.getRole() != null && user.getRole().getIdrole() != null) {
+            Role role = roleRepository.findById(user.getRole().getIdrole())
+                    .orElseThrow(() -> new RuntimeException("Error: Role tidak ditemukan."));
+            user.setRole(role);
+        }
         return userRepository.save(user);
     }
     
-    /**
-     * Mendapatkan semua data pengguna.
-     * @return Daftar semua pengguna.
-     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    /**
-     * Mendapatkan pengguna berdasarkan ID.
-     * @param id ID pengguna.
-     * @return Optional berisi objek User jika ditemukan.
-     */
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
-    /**
-     * Memperbarui data pengguna.
-     * @param id ID pengguna yang akan diupdate.
-     * @param userDetails Objek yang berisi data baru.
-     * @return Optional berisi pengguna yang telah diupdate.
-     */
     public Optional<User> updateUser(String id, User userDetails) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setNamauser(userDetails.getNamauser());
                     user.setEmail(userDetails.getEmail());
-                    // Untuk mengubah password, sebaiknya buat endpoint terpisah yang lebih aman
+
+                    if (userDetails.getRole() != null && userDetails.getRole().getIdrole() != null) {
+                        Role role = roleRepository.findById(userDetails.getRole().getIdrole())
+                                .orElseThrow(() -> new RuntimeException("Error: Role tidak ditemukan."));
+                        user.setRole(role);
+                    } else {
+                        user.setRole(null);
+                    }
+                    
                     return userRepository.save(user);
                 });
     }
 
-    /**
-     * Menghapus pengguna berdasarkan ID.
-     * @param id ID pengguna yang akan dihapus.
-     */
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

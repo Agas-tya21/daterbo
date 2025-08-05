@@ -101,7 +101,7 @@ public class DataPeminjamService {
     }
 
     /**
-     * Mengubah status peminjaman menjadi 'CAIR' (S003).
+     * Mengubah status peminjaman menjadi 'CAIR' (S003) dan mencatat tanggal pencairan.
      * @param id ID data peminjam.
      * @return Data peminjam yang telah diperbarui.
      */
@@ -113,6 +113,9 @@ public class DataPeminjamService {
         Status cairStatus = new Status();
         cairStatus.setIdstatus("S003"); 
         dataPeminjam.setStatus(cairStatus);
+
+        // Set tanggal pencairan ke tanggal saat ini
+        dataPeminjam.setTglpencairan(LocalDate.now());
 
         return dataPeminjamRepository.save(dataPeminjam);
     }

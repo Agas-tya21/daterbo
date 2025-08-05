@@ -1,11 +1,13 @@
-// Lokasi: src/main/java/com/example/daterbo/service/JwtUtil.java
 package com.example.daterbo.service;
 
+import com.example.daterbo.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,6 +23,9 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private long expiration;
+
+    @Autowired
+    private UserService userService;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -44,8 +49,14 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        User user = userService.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        if (user.getRole() != null) {
+            claims.put("role", user.getRole().getIdrole());
+        }
+        return createToken(claims, user.getEmail());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
