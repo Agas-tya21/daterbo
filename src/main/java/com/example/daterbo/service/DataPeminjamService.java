@@ -1,14 +1,15 @@
 package com.example.daterbo.service;
 
-import com.example.daterbo.model.DataPeminjam;
-import com.example.daterbo.model.Status;
-import com.example.daterbo.repository.DataPeminjamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.daterbo.model.DataPeminjam;
+import com.example.daterbo.model.Status;
+import com.example.daterbo.repository.DataPeminjamRepository;
 
 @Service
 public class DataPeminjamService {
@@ -44,6 +45,8 @@ public class DataPeminjamService {
         if (dataPeminjamDetails.getNik() != null) dataPeminjam.setNik(dataPeminjamDetails.getNik());
         if (dataPeminjamDetails.getUser() != null) dataPeminjam.setUser(dataPeminjamDetails.getUser());
         if (dataPeminjamDetails.getStatus() != null) dataPeminjam.setStatus(dataPeminjamDetails.getStatus());
+        if (dataPeminjamDetails.getPic() != null) dataPeminjam.setPic(dataPeminjamDetails.getPic());
+        if (dataPeminjamDetails.getSurveyor() != null) dataPeminjam.setSurveyor(dataPeminjamDetails.getSurveyor());
 
         // Penanganan khusus untuk Leasing
         if (dataPeminjamDetails.getLeasing() != null) {
@@ -78,7 +81,7 @@ public class DataPeminjamService {
                     
         return dataPeminjamRepository.save(dataPeminjam);
     }
-
+// ... sisa metode tidak berubah
     public void deleteDataPeminjam(String id) {
         if (!dataPeminjamRepository.existsById(id)) {
             throw new RuntimeException("Data Peminjam not found with id: " + id);

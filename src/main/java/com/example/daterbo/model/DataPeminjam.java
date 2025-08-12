@@ -1,14 +1,15 @@
 package com.example.daterbo.model;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import lombok.Data;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -31,6 +32,14 @@ public class DataPeminjam {
     @ManyToOne
     @JoinColumn(name = "idleasing", referencedColumnName = "idleasing")
     private Leasing leasing;
+
+    @ManyToOne
+    @JoinColumn(name = "idpic", referencedColumnName = "idpic")
+    private Pic pic;
+
+    @ManyToOne
+    @JoinColumn(name = "idsurveyor", referencedColumnName = "id")
+    private Surveyor surveyor;
 
     private LocalDate tglinput;
     private LocalDate tglpenerimaan;
