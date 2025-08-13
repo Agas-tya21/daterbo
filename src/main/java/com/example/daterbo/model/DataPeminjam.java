@@ -63,6 +63,7 @@ public class DataPeminjam {
     private String fotorekeninglistrik;
     private String fotobukunikah;
     private String fotosertifikat;
+    private String fotoktppenjamin;
 
     public DataPeminjam() {
         this.iddatapeminjam = UUID.randomUUID().toString();

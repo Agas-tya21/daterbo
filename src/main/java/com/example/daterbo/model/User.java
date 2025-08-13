@@ -20,6 +20,8 @@ public class User {
     private String email;
     
     private String password;
+    
+    private String nohp;
 
     @ManyToOne
     @JoinColumn(name = "idrole", referencedColumnName = "idrole")

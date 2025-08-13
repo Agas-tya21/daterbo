@@ -56,6 +56,9 @@ public class JwtUtil {
         if (user.getRole() != null) {
             claims.put("role", user.getRole().getIdrole());
         }
+        if (user.getNohp() != null) {
+            claims.put("nohp", user.getNohp()); // Menambahkan nohp ke token
+        }
         return createToken(claims, user.getEmail());
     }
 

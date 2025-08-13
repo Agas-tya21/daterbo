@@ -78,10 +78,11 @@ public class DataPeminjamService {
         if (dataPeminjamDetails.getFotorekeninglistrik() != null && !dataPeminjamDetails.getFotorekeninglistrik().isEmpty()) dataPeminjam.setFotorekeninglistrik(dataPeminjamDetails.getFotorekeninglistrik());
         if (dataPeminjamDetails.getFotobukunikah() != null && !dataPeminjamDetails.getFotobukunikah().isEmpty()) dataPeminjam.setFotobukunikah(dataPeminjamDetails.getFotobukunikah());
         if (dataPeminjamDetails.getFotosertifikat() != null && !dataPeminjamDetails.getFotosertifikat().isEmpty()) dataPeminjam.setFotosertifikat(dataPeminjamDetails.getFotosertifikat());
+        if (dataPeminjamDetails.getFotoktppenjamin() != null && !dataPeminjamDetails.getFotoktppenjamin().isEmpty()) dataPeminjam.setFotoktppenjamin(dataPeminjamDetails.getFotoktppenjamin());
                     
         return dataPeminjamRepository.save(dataPeminjam);
     }
-// ... sisa metode tidak berubah
+
     public void deleteDataPeminjam(String id) {
         if (!dataPeminjamRepository.existsById(id)) {
             throw new RuntimeException("Data Peminjam not found with id: " + id);
