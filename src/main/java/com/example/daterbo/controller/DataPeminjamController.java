@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.daterbo.model.DataPeminjam;
 import com.example.daterbo.service.DataPeminjamService;
@@ -40,7 +39,7 @@ public class DataPeminjamController {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
     }
-    
+
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<DataPeminjam> createDataPeminjam(
             @RequestPart("data") String dataPeminjamJson,
@@ -147,7 +146,7 @@ public class DataPeminjamController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     @PutMapping("/{id}/datalengkap")
     public ResponseEntity<DataPeminjam> dataLengkap(@PathVariable String id) {
         try {
@@ -195,13 +194,13 @@ public class DataPeminjamController {
     }
     
     private String createFileUrl(String fileName) {
-        if (fileName == null || fileName.isEmpty() || fileName.startsWith("http")) {
+        if (fileName == null || fileName.isEmpty()) {
             return fileName;
         }
-        
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(fileName)
-                .toUriString();
+        // Pastikan path selalu relatif
+        if (fileName.startsWith("/uploads/")) {
+            return fileName;
+        }
+        return "/uploads/" + fileName;
     }
 }
