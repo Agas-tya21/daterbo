@@ -101,6 +101,17 @@ public class DataPeminjamService {
 
         return dataPeminjamRepository.save(dataPeminjam);
     }
+    
+    public DataPeminjam dataLengkap(String id) {
+        DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Data Peminjam not found with id: " + id));
+
+        Status lengkapStatus = new Status();
+        lengkapStatus.setIdstatus("S005"); 
+        dataPeminjam.setStatus(lengkapStatus);
+
+        return dataPeminjamRepository.save(dataPeminjam);
+    }
 
     public DataPeminjam batalPeminjaman(String id) {
         DataPeminjam dataPeminjam = dataPeminjamRepository.findById(id)

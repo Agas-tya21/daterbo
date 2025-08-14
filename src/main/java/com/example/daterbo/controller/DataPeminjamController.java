@@ -147,6 +147,17 @@ public class DataPeminjamController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @PutMapping("/{id}/datalengkap")
+    public ResponseEntity<DataPeminjam> dataLengkap(@PathVariable String id) {
+        try {
+            DataPeminjam updatedData = dataPeminjamService.dataLengkap(id);
+            buildFileUrls(updatedData);
+            return ResponseEntity.ok(updatedData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PutMapping("/{id}/batal")
     public ResponseEntity<DataPeminjam> batalPeminjaman(@PathVariable String id) {
