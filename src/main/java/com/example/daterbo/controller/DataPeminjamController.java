@@ -188,8 +188,6 @@ public class DataPeminjamController {
             return fileName;
         }
         
-        // Spring Boot akan secara otomatis menggunakan skema yang benar (https)
-        // karena kita sudah mengatur server.forward-headers-strategy=framework
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/uploads/")
                 .path(fileName)
