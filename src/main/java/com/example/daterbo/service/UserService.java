@@ -92,7 +92,12 @@ public class UserService implements UserDetailsService {
                 .map(user -> {
                     user.setNamauser(userDetails.getNamauser());
                     user.setEmail(userDetails.getEmail());
-                    user.setNohp(userDetails.getNohp());
+                    user.setNohp(userDetails.getNohp());        
+
+                    if (userDetails.getPassword()!=null && !userDetails.getPassword().isEmpty()) {
+                        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+                        
+                    }
 
                     // Update role jika ada
                     if (userDetails.getRole() != null && userDetails.getRole().getIdrole() != null) {

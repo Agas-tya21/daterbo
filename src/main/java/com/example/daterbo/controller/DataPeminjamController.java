@@ -194,13 +194,10 @@ public class DataPeminjamController {
     }
     
     private String createFileUrl(String fileName) {
-        if (fileName == null || fileName.isEmpty()) {
+        if (fileName == null || fileName.isEmpty() || fileName.startsWith("http")) {
             return fileName;
         }
-        // Pastikan path selalu relatif
-        if (fileName.startsWith("/uploads/")) {
-            return fileName;
-        }
-        return "/uploads/" + fileName;
+
+        return "http://db.turboo.web.id:8070/uploads/" + fileName;
     }
 }

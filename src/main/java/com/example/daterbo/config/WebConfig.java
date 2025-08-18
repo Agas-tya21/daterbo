@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:8070", "http://localhost:3000", "http://192.168.215.192:8070" ,"http://192.168.18.2:8070", "http://192.168.18.2:3000", "http://192.168.1.10:3000")
+                .allowedOriginPatterns("http://localhost:8070", "http://localhost:3000", "http://192.168.215.192:8070" ,"http://192.168.18.5:8070", "http://192.168.18.5:3000", "http://202.152.199.27:3000","http://202.152.199.27:8070", "http://db.turboo.web.id:8070", "http://db.turboo.web.id:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
