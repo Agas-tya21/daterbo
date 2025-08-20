@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.daterbo.model.DataPeminjam;
 import com.example.daterbo.service.DataPeminjamService;
@@ -180,24 +181,26 @@ public class DataPeminjamController {
         }
     }
     
+    // Perubahan di sini
     private void buildFileUrls(DataPeminjam dataPeminjam) {
         if (dataPeminjam == null) return;
-        dataPeminjam.setFotoktp(createFileUrl(dataPeminjam.getFotoktp()));
-        dataPeminjam.setFotobpkb(createFileUrl(dataPeminjam.getFotobpkb()));
-        dataPeminjam.setFotostnk(createFileUrl(dataPeminjam.getFotostnk()));
-        dataPeminjam.setFotokk(createFileUrl(dataPeminjam.getFotokk()));
-        dataPeminjam.setFotorekeningkoran(createFileUrl(dataPeminjam.getFotorekeningkoran()));
-        dataPeminjam.setFotorekeninglistrik(createFileUrl(dataPeminjam.getFotorekeninglistrik()));
-        dataPeminjam.setFotobukunikah(createFileUrl(dataPeminjam.getFotobukunikah()));
-        dataPeminjam.setFotosertifikat(createFileUrl(dataPeminjam.getFotosertifikat()));
-        dataPeminjam.setFotoktppenjamin(createFileUrl(dataPeminjam.getFotoktppenjamin()));
+        
+        // Cukup teruskan nama file. Frontend akan membangun URL lengkap.
+        // Tidak perlu memanggil metode createFileUrl lagi jika service sudah mengembalikan nama file.
+        // Jika service masih menyimpan path absolut, Anda perlu membersihkannya di sini.
+        // Untuk saat ini, kita asumsikan service mengembalikan nama file saja.
     }
     
+    // Metode ini bisa dihapus atau diubah jika tidak diperlukan lagi.
+    // Jika Anda ingin membangun path relatif dari base URL server.
     private String createFileUrl(String fileName) {
-        if (fileName == null || fileName.isEmpty() || fileName.startsWith("http")) {
-            return fileName;
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
         }
-
-        return "http://db.turboo.web.id:8070/uploads/" + fileName;
+        // Menghasilkan URL relatif seperti /uploads/namafile.jpg
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/uploads/")
+                .path(fileName)
+                .toUriString();
     }
 }
