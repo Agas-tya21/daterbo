@@ -47,6 +47,10 @@ public class DataPeminjamService {
         if (dataPeminjamDetails.getStatus() != null) dataPeminjam.setStatus(dataPeminjamDetails.getStatus());
         if (dataPeminjamDetails.getPic() != null) dataPeminjam.setPic(dataPeminjamDetails.getPic());
         if (dataPeminjamDetails.getSurveyor() != null) dataPeminjam.setSurveyor(dataPeminjamDetails.getSurveyor());
+        // Perbarui field baru
+        if (dataPeminjamDetails.getAgent() != null) dataPeminjam.setAgent(dataPeminjamDetails.getAgent());
+        if (dataPeminjamDetails.getMediator() != null) dataPeminjam.setMediator(dataPeminjamDetails.getMediator());
+
 
         // Penanganan khusus untuk Leasing
         if (dataPeminjamDetails.getLeasing() != null) {
@@ -68,7 +72,7 @@ public class DataPeminjamService {
         if (dataPeminjamDetails.getKota() != null) dataPeminjam.setKota(dataPeminjamDetails.getKota());
         if (dataPeminjamDetails.getKecamatan() != null) dataPeminjam.setKecamatan(dataPeminjamDetails.getKecamatan());
         if (dataPeminjamDetails.getKeterangan() != null) dataPeminjam.setKeterangan(dataPeminjamDetails.getKeterangan());
-        
+
         // Update nama file hanya jika ada file baru yang diunggah
         if (dataPeminjamDetails.getFotoktp() != null && !dataPeminjamDetails.getFotoktp().isEmpty()) dataPeminjam.setFotoktp(dataPeminjamDetails.getFotoktp());
         if (dataPeminjamDetails.getFotobpkb() != null && !dataPeminjamDetails.getFotobpkb().isEmpty()) dataPeminjam.setFotobpkb(dataPeminjamDetails.getFotobpkb());

@@ -41,6 +41,15 @@ public class DataPeminjam {
     @JoinColumn(name = "idsurveyor", referencedColumnName = "id")
     private Surveyor surveyor;
 
+    // Tambahan baru
+    @ManyToOne
+    @JoinColumn(name = "idagent", referencedColumnName = "idagent")
+    private Agent agent;
+
+    @ManyToOne
+    @JoinColumn(name = "idmediator", referencedColumnName = "idmediator")
+    private Mediator mediator;
+
     private LocalDate tglinput;
     private LocalDate tglpenerimaan;
     private LocalDate tglpencairan;
